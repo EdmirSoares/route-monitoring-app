@@ -1,4 +1,4 @@
-import { Pressable, type PressableProps, StyleSheet, View, Animated } from "react-native";
+import { Pressable, type PressableProps, StyleSheet, Animated } from "react-native";
 import { useEffect, useRef } from "react";
 import { useTheme } from "@/src/shared/lib/useTheme";
 
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   thumb: {
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
