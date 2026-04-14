@@ -16,8 +16,9 @@
         "ios": {
             "supportsTablet": true,
             "infoPlist": {
-                "UIBackgroundModes": ["location", "fetch"]
-            }
+                "UIBackgroundModes": ["location", "fetch", "location", "fetch"]
+            },
+            "bundleIdentifier": ""
         },
         "android": {
             "adaptiveIcon": {
@@ -34,23 +35,8 @@
                 "SCHEDULE_EXACT_ALARM",
                 "INTERNET",
                 "android.permission.ACCESS_COARSE_LOCATION",
-                "android.permission.ACCESS_FINE_LOCATION",
-                "ACCESS_BACKGROUND_LOCATION",
-                "ACCESS_FINE_LOCATION",
-                "ACCESS_COARSE_LOCATION",
-                "FOREGROUND_SERVICE",
-                "RECEIVE_BOOT_COMPLETED",
-                "WAKE_LOCK",
-                "SCHEDULE_EXACT_ALARM",
-                "INTERNET",
-                "android.permission.ACCESS_COARSE_LOCATION",
                 "android.permission.ACCESS_FINE_LOCATION"
             ],
-            "config": {
-                "googleMaps": {
-                    "apiKey": "Google_Maps_API_Key"
-                }
-            },
             "edgeToEdgeEnabled": true,
             "package": "com.app.monitoramentoapp"
         },
