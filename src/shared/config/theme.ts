@@ -73,6 +73,7 @@ export const lightTheme = {
     status: palette.status,
     icon: palette.codGray[300],
     overlayDim: palette.overlayDim,
+    error: palette.status.error,
   },
 } as const;
 
@@ -99,6 +100,7 @@ export const darkTheme = {
     status: palette.status,
     icon: palette.codGray[200],
     overlayDim: palette.overlayDim,
+    error: palette.status.error,
   },
 } as const;
 
