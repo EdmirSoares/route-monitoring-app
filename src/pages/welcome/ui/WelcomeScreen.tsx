@@ -8,39 +8,14 @@ import {
   StatusBar,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { useState, useEffect } from "react";
+import { Controller } from "react-hook-form";
 import { Text } from "@/src/shared/ui/Text/Text";
 import { BrandDetail } from "@/src/shared/ui/BrandDetail/BrandDetail";
-import { useUserName } from "@/src/shared/lib/useUserName";
-import { useTheme } from "@/src/shared/lib/useTheme";
-import { useToastStore } from "@/src/shared/store/toastStore";
-import { nameSchema } from "@/src/entities/user";
-
+import { useWelcomeScreen } from "../model/useWelcomeScreen";
 
 export function WelcomeScreen() {
-  const router = useRouter();
-  const { name: savedName, saveName } = useUserName();
-  const [inputName, setInputName] = useState("");
+  const { control, errors, handleContinue, theme } = useWelcomeScreen();
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
-  const showToast = useToastStore((s) => s.show);
-
-  useEffect(() => {
-    if (savedName) {
-      router.replace("/home");
-    }
-  }, [savedName, router]);
-
-  const handleContinue = async () => {
-    const result = nameSchema.safeParse({ name: inputName.trim() });
-    if (!result.success) {
-      showToast(result.error.issues[0].message, "error");
-      return;
-    }
-    await saveName(result.data.name);
-    router.replace("/home");
-  };
 
   return (
     <View style={[styles.root, { backgroundColor: theme.colors.background }]}>
@@ -49,7 +24,6 @@ export function WelcomeScreen() {
         style={styles.kav}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-
         <View style={styles.logoArea}>
           <View style={styles.brandDetailWrap}>
             <BrandDetail size={112} />
@@ -62,7 +36,6 @@ export function WelcomeScreen() {
         />
 
         <View style={[styles.card, { backgroundColor: theme.colors.surface, paddingBottom: Math.max(insets.bottom, 18) }]}>
-
           <Text
             weight="bold"
             style={[styles.welcomeText, { color: theme.colors.text.primary }]}
@@ -71,15 +44,25 @@ export function WelcomeScreen() {
             {"WEL\nCOME"}
           </Text>
 
-          <TextInput
-            style={[styles.input, { borderColor: theme.colors.primary.default, color: theme.colors.text.white }]}
-            placeholder="First name"
-            placeholderTextColor={theme.colors.text.subtle}
-            value={inputName}
-            onChangeText={setInputName}
-            autoCapitalize="words"
-            returnKeyType="done"
-            onSubmitEditing={handleContinue}
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  { borderColor: errors.name ? theme.colors.error : theme.colors.primary.default, color: theme.colors.text.white },
+                ]}
+                placeholder="First name"
+                placeholderTextColor={theme.colors.text.subtle}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                autoCapitalize="words"
+                returnKeyType="done"
+                onSubmitEditing={handleContinue}
+              />
+            )}
           />
 
           <View style={styles.buttonRow}>
