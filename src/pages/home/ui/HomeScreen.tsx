@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { Text } from "@/src/shared/ui/Text/Text";
 import LogoWhite from "@/src/shared/assets/icons/logo_white.svg";
+import Arrow from "@/src/shared/assets/icons/arrow.svg";
 import { LeafletMap } from "@/src/shared/ui/LeafletMap/LeafletMap";
 import { useHomeScreen } from "../model/useHomeScreen";
 
@@ -26,7 +27,7 @@ export function HomeScreen() {
                 style={{ width, height: MAP_HEIGHT }}
             />
 
-            <View style={styles.panels}>
+            <View style={[styles.panels, { gap: theme.spacing[3], paddingTop: theme.spacing[3] }]}>
                 <Pressable
                     style={({ pressed }) => [
                         styles.panelLeft,
@@ -66,9 +67,7 @@ export function HomeScreen() {
                     >
                         {"Set\ntin\ngs"}
                     </Text>
-                    <Text style={[styles.arrowIcon, { color: theme.colors.text.primary }]}>
-                        →
-                    </Text>
+                    <Arrow width={24} height={19} style={{ position: "absolute", right: 25, bottom: 25 }} />
                 </Pressable>
             </View>
 
