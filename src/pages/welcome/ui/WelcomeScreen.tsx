@@ -146,7 +146,6 @@ const styles = StyleSheet.create({
   continueBtn: {
     borderRadius: 18,
     height: 65,
-    width: 190,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 63,
