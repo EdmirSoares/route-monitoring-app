@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
-import { Alert, Linking, Platform } from "react-native";
+import { Alert, Linking } from "react-native";
 import { insertLocation } from "@/src/entities/location";
 import { LOCATION_TASK, syncLocations } from "./trackingTasks";
 
@@ -21,6 +21,7 @@ export function useTracking() {
   });
 
   const syncIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const watcherRef = useRef<Location.LocationSubscription | null>(null);
 
   const setPartial = (partial: Partial<TrackingState>) =>
     setState((prev) => ({ ...prev, ...partial }));
@@ -77,10 +78,25 @@ export function useTracking() {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         accuracy: location.coords.accuracy ?? undefined,
-        speed: location.coords.speed ?? undefined,
+        speed: location.coords.speed != null && location.coords.speed >= 0 ? location.coords.speed : undefined,
         altitude: location.coords.altitude ?? undefined,
         timestamp: Date.now(),
       });
+
+      watcherRef.current = await Location.watchPositionAsync(
+        { accuracy: Location.Accuracy.High, distanceInterval: 5 },
+        async (loc) => {
+          setPartial({ currentLocation: loc });
+          await insertLocation({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+            accuracy: loc.coords.accuracy ?? undefined,
+            speed: loc.coords.speed != null && loc.coords.speed >= 0 ? loc.coords.speed : undefined,
+            altitude: loc.coords.altitude ?? undefined,
+            timestamp: Date.now(),
+          }).catch((err) => console.warn("[tracking] watcher insert:", err));
+        }
+      );
 
       setPartial({ isTracking: true });
     } catch (err) {
@@ -93,6 +109,9 @@ export function useTracking() {
 
   const stopTracking = async () => {
     try {
+      watcherRef.current?.remove();
+      watcherRef.current = null;
+
       const isRegistered = await TaskManager.isTaskRegisteredAsync(LOCATION_TASK);
       if (isRegistered) {
         await Location.stopLocationUpdatesAsync(LOCATION_TASK);
@@ -123,6 +142,8 @@ export function useTracking() {
       if (syncIntervalRef.current) {
         clearInterval(syncIntervalRef.current);
       }
+      watcherRef.current?.remove();
+      watcherRef.current = null;
     };
   }, [state.isTracking]);
 

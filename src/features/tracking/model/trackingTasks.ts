@@ -48,7 +48,7 @@ export function registerLocationTask() {
       latitude: loc.coords.latitude,
       longitude: loc.coords.longitude,
       accuracy: loc.coords.accuracy ?? undefined,
-      speed: loc.coords.speed ?? undefined,
+      speed: loc.coords.speed != null && loc.coords.speed >= 0 ? loc.coords.speed : undefined,
       altitude: loc.coords.altitude ?? undefined,
       timestamp: Date.now(),
     });
