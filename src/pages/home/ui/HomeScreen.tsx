@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { Text } from "@/src/shared/ui/Text/Text";
 import LogoWhite from "@/src/shared/assets/icons/logo_white.svg";
-import Arrow from "@/src/shared/assets/icons/arrow.svg";
+import Arrow from "@/src/shared/assets/icons/arrow_icon.svg";
 import { LeafletMap } from "@/src/shared/ui/LeafletMap/LeafletMap";
 import { useHomeScreen } from "../model/useHomeScreen";
 

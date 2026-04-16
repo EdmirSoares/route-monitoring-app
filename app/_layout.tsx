@@ -1,90 +1,61 @@
-// app/_layout.tsx
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { useFonts, Inter_100Thin, Inter_200ExtraLight, Inter_300Light, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold, Inter_900Black } from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { AuthProvider, useAuth } from "../src/shared/providers/AuthProvider";
-import "react-native-reanimated";
-import { useColorScheme } from "@/src/design/useColorScheme";
-import { View, ActivityIndicator, StatusBar } from "react-native";
+import { StatusBar, View, StyleSheet } from "react-native";
+import { DatabaseProvider } from "@/src/core/providers";
+import { registerLocationTask } from "@/src/features/tracking";
+import { Toast } from "@/src/shared/ui/Toast/Toast";
+
 export { ErrorBoundary } from "expo-router";
 
-export const unstable_settings = {
-    initialRouteName: "(tabs)",
-};
+// Register background task before anything else
+registerLocationTask();
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const [loaded, error] = useFonts({
-        SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-        InterThin: require("../assets/fonts/Inter-Thin.ttf"),
-        InterExtraLight: require("../assets/fonts/Inter-ExtraLight.ttf"),
-        InterLight: require("../assets/fonts/Inter-Light.ttf"),
-        InterRegular: require("../assets/fonts/Inter-Regular.ttf"),
-        InterMedium: require("../assets/fonts/Inter-Medium.ttf"),
-        InterSemiBold: require("../assets/fonts/Inter-SemiBold.ttf"),
-        InterBold: require("../assets/fonts/Inter-Bold.ttf"),
-        InterExtraBold: require("../assets/fonts/Inter-ExtraBold.ttf"),
-        InterBlack: require("../assets/fonts/Inter-Black.ttf"),
-        ...FontAwesome.font,
-    });
+  const [fontsLoaded, fontError] = useFonts({
+    Inter_100Thin,
+    Inter_200ExtraLight,
+    Inter_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+    Inter_900Black,
+  });
 
-    useEffect(() => {
-        if (error) throw error;
-    }, [error]);
+  useEffect(() => {
+    if (fontError) throw fontError;
+  }, [fontError]);
 
-    useEffect(() => {
-        if (loaded) {
-            SplashScreen.hideAsync();
-        }
-    }, [loaded]);
-
-    if (!loaded) {
-        return null;
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
     }
+  }, [fontsLoaded]);
 
-    return (
-        <AuthProvider>
-            
-            <StatusBar backgroundColor={"#000"} />
-            <RootLayoutNav />
-        </AuthProvider>
-    );
+  if (!fontsLoaded) return null;
+
+  return (
+    <DatabaseProvider>
+      <View style={styles.root}>
+        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+        <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="home" />
+          <Stack.Screen name="settings" />
+        </Stack>
+        <Toast />
+      </View>
+    </DatabaseProvider>
+  );
 }
 
-function RootLayoutNav() {
-    const colorScheme = useColorScheme();
-    const { isLoggedIn, isLoading } = useAuth();
-
-    if (isLoading) {
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <ActivityIndicator size="large" />
-            </View>
-        );
-    }
-
-    return (
-        <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-            <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" redirect={!isLoggedIn} />
-                <Stack.Screen name="(loggedOut)" redirect={isLoggedIn} />
-            </Stack>
-        </ThemeProvider>
-    );
-}
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});
